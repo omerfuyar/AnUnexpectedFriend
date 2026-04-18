@@ -9,7 +9,7 @@ typedef struct ChatEntry
     const char *message;
 } ChatEntry;
 
-const ChatEntry const entries[] = {
+const ChatEntry entries[] = {
 #define CHAT_ENTRY(a, b) (const ChatEntry){.milliseconds = a, .message = b},
     CHAT_LIST
 #undef CHAT_ENTRY
@@ -26,9 +26,27 @@ int main(void)
         const ChatEntry *entry = &entries[index];
 
         usleep(entry->milliseconds * 1000);
-        SHU_PutString("> %s\n", entry->message);
 
-        SHU_("> ");
+        if (entry->message == NULL)
+        {
+            SHU_SetAttributes(SHUAttribute_ColorFGGreen);
+            SHU_PutCharacter('>');
+
+            SHU_SetAttributes(SHUAttribute_ColorFGCyan);
+            SHUKey key = SHUKey_Invalid;
+            do
+            {
+                key = SHU_Key();
+                SHU_PutCharacter(key);
+            } while (key != SHUKey_Enter);
+        }
+        else
+        {
+            SHU_SetAttributes(SHUAttribute_ColorFGGreen);
+            SHU_PutCharacter('<');
+            SHU_SetAttributes(SHUAttribute_ColorFGRed);
+            SHU_PutString("%s\n", entry->message);
+        }
 
         index++;
     }
